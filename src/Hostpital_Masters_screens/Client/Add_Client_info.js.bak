@@ -1,0 +1,379 @@
+import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import Select from "react-select";
+import '../../App.css'
+import { useLocation, useNavigate } from 'react-router-dom';
+const config = require("../../Apiconfig.js");
+
+
+const company_code = sessionStorage.getItem('selectedCompanyCode');
+const AddClientScreen = () => {
+  const [selectedAgreement, setSelectedAgreement] = useState("");
+  const [Agreementdrop, setAgreementdrop] = useState([]);
+  const [Agreement, setAgreement] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+   const [loading, setLoading] = useState(false);
+
+    const [ClientName, setClientName] = useState("");
+    const [ContactPerson, setContactPerson] = useState("");
+    const [ContactNumber, setContactNumber] = useState("");
+    const [Address, setAddress] = useState("");
+
+  const [isUpdated, setIsUpdated] = useState(false);
+  
+  const { mode, selectedRow } = location.state || {};
+ const initialClientData = {
+  ClientID: "",
+  ClientName: "",
+  ContactPerson: "",
+  ContactNumber: "",
+  AgreementType: "",
+  company_code: company_code,
+  Address:"", // assuming Agreement is a string like 'Active' or 'Inactive'
+  Created_by: company_code,
+  Created_date: new Date().toISOString(),
+};
+
+
+  const [ClientData, setClientData] = useState(initialClientData);
+
+
+    const clearInputFields = () => {
+      setSelectedAgreement("");
+      setClientName("");
+      setContactPerson("");
+      setContactNumber("");
+      setAddress("");
+
+
+    };
+
+    console.log(selectedRow)
+
+
+useEffect(() => {
+  if (mode === "update" && selectedRow && !isUpdated) {
+    setClientData({
+
+     
+      ClientID: selectedRow.ClientID || "",
+      ClientName: selectedRow.ClientName || "",
+      ContactPerson: selectedRow.ContactPerson || "",
+      ContactNumber: selectedRow.ContactNumber || "",
+      AgreementType: selectedRow.AgreementType || "",
+      Address:selectedRow.Address || "",
+    });
+    setSelectedAgreement({
+      label: selectedRow.Agreement,
+      value: selectedRow.Agreement
+    });
+    setIsUpdated(true);
+  } else if (mode === "create") {
+    setClientData({
+      ClientID: "",
+      ClientName: "",
+      ContactPerson: "",
+      ContactNumber: "",
+      AgreementType: "",
+      Address:"",
+      company_code: company_code,
+      Created_by: company_code,
+      Created_date: new Date().toISOString(),
+    });
+    setSelectedAgreement(null);
+  }
+}, [mode, selectedRow, isUpdated]);
+
+
+
+
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setClientData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+  setFormErrors((prev) => ({ ...prev, [name]: "" }));
+};
+
+ const validateForm = () => {
+  const errors = {};
+  const {
+    ClientID,
+    ClientName,
+    ContactPerson,
+    ContactNumber,
+    AgreementType,
+    Address,
+    Created_by,
+    Created_date
+  } = ClientData;
+
+  if (!ClientID.trim()) errors.ClientID = "Client ID is required";
+  if (!ClientName.trim()) errors.ClientName = "Client Name is required";
+  if (!ContactPerson.trim()) errors.ContactPerson = "Contact Person is required";
+  
+  if (!ContactNumber.trim()) {
+    errors.ContactNumber = "Contact Number is required";
+  } else if (!/^\d{10}$/.test(ContactNumber)) {
+    errors.ContactNumber = "Contact Number must be exactly 10 digits";
+  }
+
+  if (!AgreementType.trim()) errors.AgreementType = "AgreementType is required";
+  if (!Address.trim()) errors.Address = "Address is required";
+  if (!Created_by.trim()) errors.Created_by = "Created By is required";
+  if (!Created_date) errors.Created_date = "Created Date is required";
+
+  setFormErrors(errors);
+
+  if (Object.keys(errors).length > 0) {
+    toast.error("Please fill all fields correctly");
+    return false;
+  }
+
+  return true;
+};
+
+
+const getInputClass = (fieldName) => {
+  return formErrors[fieldName] ? "form-control is-invalid" : "form-control";
+};
+
+const handleUpdate = async () => {
+  if (
+    !ClientData.ClientID ||
+    !ClientData.ClientName ||
+    !ClientData.ContactPerson ||
+    !ClientData.ContactNumber ||
+    !ClientData.Address ||
+    !selectedAgreement
+  ) {
+    setError("Please fill in all required fields");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/ClientMasterUpdate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ClientID: ClientData.ClientID,
+        ClientName: ClientData.ClientName,
+        ContactPerson: ClientData.ContactPerson,
+        ContactNumber: ClientData.ContactNumber,
+        AgreementType: selectedAgreement.value,
+        Address: ClientData.Address,
+        company_code: company_code,
+      }),
+    });
+
+    if (response.status === 200) {
+      console.log("Data Updated successfully");
+      toast.success("Data Updated successfully!");
+      clearInputFields();
+    } else if (response.status === 400) {
+      const errorResponse = await response.json();
+      console.error(errorResponse.message);
+      toast.warning(errorResponse.message);
+    } else {
+      console.error("Failed to update data");
+      toast.error("Failed to update data");
+    }
+  } catch (error) {
+    console.error("Error updating data:", error);
+    toast.error("Error updating data: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/ClientMasterInsert`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(ClientData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Client added successfully!");
+
+        // Reset form
+        setClientData({
+          ...initialClientData,
+          Created_date: new Date().toISOString(),
+        });
+      } else {
+        toast.error("Server Error: " + data.message);
+      }
+    } catch (err) {
+      toast.error("An error occurred: " + err.message);
+    }
+  };
+
+
+ useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/Gender`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setAgreementdrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
+
+  const filteredOptionAgreement = Agreementdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+ const handleChangeAgreement = (selectedOption) => {
+  setSelectedAgreement(selectedOption);
+  setClientData((prev) => ({
+    ...prev,
+    AgreementType: selectedOption ? selectedOption.value : "",
+  }));
+  setFormErrors((prev) => ({ ...prev, AgreementType: "" }));
+};
+
+
+
+ const handleNavigate = () => {
+    navigate("/SearchClient"); // Pass selectedRows as props to the Input component
+  };
+
+
+  return (
+    <div className="container-fluid Topnav-screen">
+       <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <div className="d-flex justify-content-between border bg-white rounded-2 p-3 align-items-center mb-3 shadow-sm">
+        <h2 className="mb-0 ms-3">Add Client</h2>
+        <button type="button" className="close btn btn-danger" onClick={handleNavigate} aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div className="card mb-3 shadow-sm p-3">
+        <div className="row g-3">
+          <div className="col-md-3">
+           <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.ClientID ? "text-danger" : ""}`}>
+            Client ID
+          </label>
+            <input
+              name="ClientID"
+              className="form-control"
+              type="text"
+              value={ClientData.ClientID}
+              
+              onChange={handleChange}
+              readOnly={mode === "update" && isUpdated}
+            />
+         
+
+          </div>
+          <div className="col-md-3">
+            <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.ClientName ? "text-danger" : ""}`}>Client Name</label>
+            <input
+              name="ClientName"
+              className="form-control"
+              type="text"
+              value={ClientData.ClientName}
+              onChange={handleChange}
+            />
+
+          </div>
+          <div className="col-md-3">
+            <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.ContactPerson ? "text-danger" : ""}`}>Contact Person
+</label>
+           <input
+              name="ContactPerson"
+              className="form-control"
+              type="text"
+              value={ClientData.ContactPerson}
+              onChange={handleChange}
+              maxLength={10}
+            />
+
+          </div>
+        
+          <div className="col-md-3">
+            <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.ContactNumber ? "text-danger" : ""}`}>Contact Number</label>
+            <input
+              name="ContactNumber"
+              className="form-control"
+              type="text"
+              value={ClientData.ContactNumber}
+              onChange={handleChange}
+              maxLength={10}
+            />
+
+          </div>
+
+          
+          <div className="col-md-3">
+            <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.Address ? "text-danger" : ""}`}>Address</label>
+            <textarea
+              name="Address"
+              className="form-control"
+              type="text"
+              value={ClientData.Address}
+              onChange={handleChange}
+            />
+
+          </div>
+          <div className="col-md-3">
+            <label className={`form-label fw-semibold d-flex justify-content-start ${formErrors.selectedAgreement ? "text-danger" : ""}`}>Agreement Type</label>
+            <Select
+              id="Agreement"
+              value={selectedAgreement}
+              onChange={handleChangeAgreement}
+              options={filteredOptionAgreement}
+              className="exp-input-field"
+            />
+          </div>
+         
+         <div class="col-md-3 form-group d-flex justify-content-start mb-4">
+                    {mode === "create" ? (
+                      <button onClick={handleSave} className="mt-4" title="Save">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                      </button>
+                    ) : (
+                      <button
+                          type="button" // ✅ Prevent default form submission
+                          onClick={handleUpdate}
+                          className="mt-4"
+                          title="Update"
+                        >
+                          <i className="fa-solid fa-pen-to-square"></i>
+                        </button>
+
+                    )}
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddClientScreen;

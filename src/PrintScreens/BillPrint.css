@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=One+Stroke+Script&display=swap');
+
+
+.bill-container {
+  max-width: 800px;
+  margin: auto;
+  /* border: 1px solid #000; */
+  background: #fff;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.company-name {
+  font-family: 'One Stroke Script', cursive;
+  font-weight: bold;
+}
+
+.font-size{
+  font-size: 16px;
+}
+
+.address-fs{
+  font-size: 13px;
+}
