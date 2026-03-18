@@ -1,0 +1,55 @@
+.hospital-dashboard {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background-color: #f8f9fa;
+  /* min-height: 100vh; */
+  height: auto;
+}
+
+.stat-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+  border: none;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card small {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.stat-card h3 {
+  font-weight: 700;
+  color: #212529;
+}
+
+.card {
+  border-radius: 12px;
+  border: none;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+header h2 {
+  font-weight: 700;
+}
+
+select, input[type="date"] {
+  border-radius: 8px;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+select:focus, input[type="date"]:focus {
+  border-color: #4fd1c5;
+  box-shadow: 0 0 0 2px rgba(79, 209, 197, 0.2);
+}
+

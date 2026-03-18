@@ -1,0 +1,76 @@
+/* From Uiverse.io by umairmanzoor1143 */ 
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 9999;
+    flex-direction: column;
+  }
+  
+  .heart-rate {
+  position: relative;
+  width: 150px;
+  height: 73px;
+}
+
+.heartbeat-line {
+  stroke-dasharray: 300;  /* Line length */
+  stroke-dashoffset: 300; /* Hide initially */
+  animation: heartbeat 2s linear infinite;
+}
+
+/* Heartbeat animation */
+@keyframes heartbeat {
+  0% {
+    stroke-dashoffset: 300;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -300;
+  }
+}
+
+/* Fade edges for smooth look */
+.fade-in,
+.fade-out {
+  position: absolute;
+  top: 0;
+  width: 20%;
+  height: 100%;
+  z-index: 2;
+}
+
+.fade-in {
+  left: 0;
+}
+
+.fade-out {
+  right: 0;
+}
+
+/* Loading text animation */
+.loading-text {
+  margin-top: 5px;
+  color: #00ff99;
+  font-family: monospace;
+  font-size: 16px;
+  letter-spacing: 2px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,343 @@
+import React, { useEffect, useState } from 'react';
+import Chart from 'react-apexcharts';
+import './HMS_Dashboard.css';
+import Cards from './Cards.js';
+import { useNavigate } from 'react-router-dom';
+const config = require("../../Apiconfig.js");
+
+const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+export default function HospitalDashboard() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [patientStartDate, setPatientStartDate] = useState('');
+  const [patientEndDate, setPatientEndDate] = useState('');
+  const [serviceStartDate, setServiceStartDate] = useState('');
+  const [serviceEndDate, setSerivceEndDate] = useState('');
+  const [genderStartDate, setgenderStartDate] = useState('');
+  const [genderEndDate, setGenderEndDate] = useState('');
+
+  useEffect(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const formatDate = (date) => {
+      let year = date.getFullYear();
+      let month = String(date.getMonth() + 1).padStart(2, "0");
+      let day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    setPatientStartDate(formatDate(firstDay));
+    setPatientEndDate(formatDate(lastDay));
+    setServiceStartDate(formatDate(firstDay));
+    setSerivceEndDate(formatDate(lastDay));
+    setgenderStartDate(formatDate(firstDay));
+    setGenderEndDate(formatDate(lastDay));
+  }, []);
+
+  const [patientsData, setPatientsData] = useState({
+    series: [{ name: "Patients", data: [] }],
+    options: {
+      chart: { type: "bar", height: 300, toolbar: { show: false } },
+      plotOptions: { bar: { borderRadius: 8, columnWidth: "50%" } },
+      stroke: { curve: "smooth", width: 1 },
+      colors: ["#06b6d4"],
+      fill: {
+        type: "gradient",
+        gradient: {
+          shade: "light",
+          type: "vertical",
+          shadeIntensity: 0.1,
+          gradientToColors: ["#67e8f9"],
+          stops: [0, 100]
+        }
+      },
+      xaxis: { categories: [], labels: { style: { fontWeight: 500 } } },
+      tooltip: { theme: "dark" }
+    }
+  });
+
+  const [chartData, setChartData] = useState({
+    options: {
+      chart: {
+        id: "services-bar",
+        toolbar: { show: false },
+        foreColor: "#4e4e4e",
+        fontFamily: "Inter, sans-serif",
+        dropShadow: {
+          enabled: true,
+          top: 3,
+          left: 2,
+          blur: 4,
+          opacity: 0.2
+        }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "55%",
+          endingShape: "rounded",
+          borderRadius: 6
+        }
+      },
+      dataLabels: { enabled: false },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shade: "light",
+          type: "vertical",
+          shadeIntensity: 0.3,
+          gradientToColors: ["#2b8aef"],
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 0.6,
+          stops: [0, 100]
+        }
+      },
+      colors: ["#1e90ff"],
+      grid: { borderColor: "#e5e5e5", strokeDashArray: 5 },
+      yaxis: { labels: { style: { fontSize: "12px", fontWeight: 500 } } },
+      title: { align: "center", style: { fontSize: "18px", fontWeight: "bold" } }
+    },
+    series: [{ name: "Services", data: [] }]
+  });
+
+  const [chartGenderData, setChartGenderData] = useState({
+    options: {
+      chart: { id: "gender-chart", toolbar: { show: false } },
+      xaxis: { categories: [] },
+      tooltip: {
+        shared: true,
+        intersect: false,
+        y: { formatter: val => `${val} Patients` }
+      }
+    },
+    series: [
+      { name: "Male", data: [] },
+      { name: "Female", data: [] }
+    ]
+  });
+
+  const fetchGenderData = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseUrl}/TotalGender`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_code, StartDate: genderStartDate, EndDate: genderEndDate })
+      });
+      const data = await res.json();
+
+      const categories = data.map(item => new Date(item.BillDate).toLocaleDateString("en-GB"));
+      const maleCounts = data.map(item => item.MaleCount || 0);
+      const femaleCounts = data.map(item => item.FemaleCount || 0);
+
+      setChartGenderData(prev => ({
+        ...prev,
+        options: { ...prev.options, xaxis: { categories } },
+        series: [
+          { name: "Male", data: maleCounts },
+          { name: "Female", data: femaleCounts }
+        ]
+      }));
+    } catch (err) {
+      console.error("Error fetching gender data:", err);
+    }
+  };
+
+  const fetchServiceData = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseUrl}/NumberofService`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_code, StartDate: serviceStartDate, EndDate: serviceEndDate })
+      });
+      const data = await res.json();
+
+      console.log(data)
+      // const categories = data.map(item => new Date(item.created_date).toLocaleDateString("en-GB"));
+      // const counts = data.map(item => item.ServiceID);
+
+      // setChartData(prev => ({
+      //   ...prev,
+      //   options: {
+      //     ...prev.options,
+      //     xaxis: { categories, labels: { show: false }, tooltip: { enabled: true } },
+      //     tooltip: {
+      //       theme: "light",
+      //       x: {
+      //         show: true,
+      //         formatter: (val, opts) => {
+      //           const service = data[opts.dataPointIndex].ServiceName;
+      //           return `${service}`;
+      //         }
+      //       },
+      //       y: { formatter: val => `${val}` }
+      //     }
+      //   },
+      //   series: [{ name: "Services", data: counts }]
+      // }));
+    } catch (err) {
+      console.error("Error fetching services:", err);
+    }
+  };
+
+  const fetchPatientData = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseUrl}/NumberofPatients`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_code, StartDate: patientStartDate, EndDate: patientEndDate })
+      });
+      const resultData = await res.json();
+
+      const categories = resultData.map(item => item.BillDate || "Unknown Date");
+      const counts = resultData.map(item => item.TotalPatients || 0);
+
+      setPatientsData({
+        series: [{ name: "Patients", data: counts }],
+        options: {
+          chart: { height: 350, toolbar: { show: false } },
+          plotOptions: { bar: { borderRadius: 8, columnWidth: "50%" } },
+          stroke: { curve: "smooth", width: 1 },
+          colors: ["#06b6d4"],
+          fill: {
+            type: "gradient",
+            gradient: {
+              shade: "light",
+              type: "vertical",
+              shadeIntensity: 0.1,
+              gradientToColors: ["#67e8f9"],
+              stops: [0, 100]
+            }
+          },
+          xaxis: { categories, labels: { style: { fontWeight: 500 } } },
+          tooltip: { theme: "dark" }
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (patientStartDate && patientEndDate) {
+      fetchPatientData();
+    }
+  }, [patientStartDate, patientEndDate]);
+
+  useEffect(() => {
+    if (serviceStartDate && serviceEndDate) {
+      fetchServiceData();
+    }
+  }, [serviceStartDate, serviceEndDate]);
+
+  useEffect(() => {
+    if (genderStartDate && genderEndDate) {
+      fetchGenderData();
+    }
+  }, [genderStartDate, genderEndDate]);
+
+  if (loading) return <div className="p-4">Loading...</div>;
+
+  return (
+    <div className="hospital-dashboard container-fluid p-3 Topnav-screen">
+      <div className="row">
+        <main className="col-12">
+          <header className="d-flex justify-content-between align-items-Start mb-2">
+            <h3 className="">Dashboard</h3>
+          </header>
+          <Cards data={data} />
+
+          <section className="row g-3">
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between">
+                    <h3 className='text-dark text-start mb-2' style={{ cursor: "pointer" }} onClick={() => navigate("/BillingReport")}>Patients Bills Completed</h3>
+                    {/* <select value={patientsChartType} onChange={(e) => setPatientsChartType(e.target.value)}>
+                      <option value="line">Line</option>
+                      <option value="area">Area</option>
+                      <option value="bar">Bar</option>
+                    </select> */}
+                  </div>
+                  <div className="row mb-3">
+                    <div className='col-md-6'>
+                      <label>Start Date:</label>
+                      <input className="form-control-sm auto" type="date" value={patientStartDate} onChange={e => setPatientStartDate(e.target.value)} />
+                    </div>
+                    <div className='col-md-6'>
+                      <label>End Date:</label>
+                      <div className="d-flex align-items-center gap-2">
+                        <input className="form-control form-control-sm" type="date" value={patientEndDate} onChange={e => setPatientEndDate(e.target.value)} />
+                        <button className="p-1" onClick={fetchPatientData}>
+                          🔍
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <Chart {...patientsData} type="bar" height={350} />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-4">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between mb-1">
+                    <h3 className='text-dark text-start' onClick={() => navigate("/ServiceReport")}>Total Services</h3>
+                  </div>
+                  <div className="row mb-3">
+                    <div className='col-md-6'>
+                      <label>Start Date:</label>
+                      <input className="form-control-sm auto" type="date" value={serviceStartDate} onChange={e => setServiceStartDate(e.target.value)} />
+                    </div>
+                    <div className='col-md-6'>
+                      <label>End Date:</label>
+                      <div className="d-flex align-items-center gap-2">
+                        <input className="form-control form-control-sm" type="date" value={serviceEndDate} onChange={e => setSerivceEndDate(e.target.value)} />
+                        <button className="p-1" onClick={fetchServiceData}>🔍</button>
+                      </div>
+                    </div>
+                  </div>
+                  <Chart options={chartData.options} series={chartData.series} type="bar" height={350} />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-4">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between">
+                    <h3 className="text-dark mb-2" style={{ cursor: "pointer" }} onClick={() => navigate("/GenderReport")}>Gender Wise Statistics</h3>
+                    {/* <select value={genderChartType} onChange={(e) => setGenderChartType(e.target.value)}>
+                      <option value="line">Line</option>
+                      <option value="area">Area</option>
+                      <option value="bar">Bar</option>
+                    </select> */}
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-md-5">
+                      <label>Start Date:</label>
+                      <input className="form-control-sm" type="date" value={genderStartDate} onChange={(e) => setgenderStartDate(e.target.value)} />
+                    </div>
+                    <div className="col-md-5">
+                      <label>End Date:</label>
+                      <input className="form-control-sm" type="date" value={genderEndDate} onChange={(e) => setGenderEndDate(e.target.value)} />
+                    </div>
+                    <div className="col-md-2 d-flex align-items-end">
+                      <button className="p-1" onClick={fetchGenderData}>🔍</button>
+                    </div>
+                  </div>
+                  <Chart options={chartGenderData.options} series={chartGenderData.series} type="bar" height={350} />
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  );
+}
