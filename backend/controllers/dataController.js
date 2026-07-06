@@ -32695,5 +32695,4 @@ module.exports = {
   GetServiceReport,
   GetServiceName,
   getDoctorDropdown
-  
 };
