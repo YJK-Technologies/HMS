@@ -61,10 +61,13 @@ const TopBar = () => {
   const handlesetting = () => {
     navigate("/Settings")
   }
-
-  const handleAccount = () => {
-    navigate("/AccountInformation")
+  const handleUserSettings = () => {
+    navigate("/UserSettings")
   }
+
+  // const handleAccount = () => {
+  //   navigate("/AccountInformation")
+  // }
 
 
   const handleImageChange = (e) => {
@@ -324,7 +327,8 @@ const TopBar = () => {
               </a>
               <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <li style={{ cursor: "pointer" }}>
-                  <a className="dropdown-item" onClick={handleAccount}>List of Companies</a>
+                  {/* <a className="dropdown-item" onClick={handleAccount}>List of Companies</a> */}
+                  <a className="dropdown-item" onClick={handleUserSettings}>User Settings</a>
                 </li>
                 <li style={{ cursor: "pointer" }}>
                   <a className="dropdown-item" onClick={handlesetting}>Settings</a>
