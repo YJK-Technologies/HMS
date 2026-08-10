@@ -96,7 +96,7 @@ const Login = () => {
         await fetchUserData(user_code);
 
         // Navigate after everything finishes
-        navigate('/HMSDashboard');
+        // navigate('/HMSDashboard');
 
       } else {
         const errorData = await response.json();
@@ -131,25 +131,55 @@ const Login = () => {
     }
   };
 
-  const fetchUserData = async (user_code) => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/getusercompany`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_code })
-      });
+  const fetchUserData = async (userCode) => {
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/getDefaultUserCompany`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_code: userCode }),
+    });
 
-      if (response.ok) {
-        const searchData = await response.json();
-        handleSave(searchData[0]);
-      } else if (response.status === 400) {
-        const errorResponse = await response.json();
-        setLoginError(errorResponse.message);
+    if (res.ok) {
+      const data = await res.json();
+
+      if (data.length > 0) {
+       handleSave(data[0]);
+
+        const defaultScreen = data[0].DefaultScreenId?.trim();
+              
+        if (defaultScreen) {
+          navigate(`/${defaultScreen}`);
+        } else {
+          navigate("/AccountInformation");
+        }
       }
-    } catch (error) {
-      setLoginError("Error fetching search data:", error);
+    } else {
+      console.error("No company mapping found.");
     }
-  };
+  } catch (err) {
+    console.error("Error fetching default user company:", err);
+  }
+};
+
+  // const fetchUserData = async (user_code) => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/getusercompany`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ user_code })
+  //     });
+
+  //     if (response.ok) {
+  //       const searchData = await response.json();
+  //       handleSave(searchData[0]);
+  //     } else if (response.status === 400) {
+  //       const errorResponse = await response.json();
+  //       setLoginError(errorResponse.message);
+  //     }
+  //   } catch (error) {
+  //     setLoginError("Error fetching search data:", error);
+  //   }
+  // };
 
   const handleSave = (data) => {
     if (data) {
@@ -160,6 +190,7 @@ const Login = () => {
       sessionStorage.setItem('selectedShortName', data.short_name);
       sessionStorage.setItem('selectedUserName', data.user_name);
       sessionStorage.setItem('selectedUserCode', data.user_code);
+      sessionStorage.setItem( "DefaultScreenId", data.DefaultScreenId || "" );
     }
   };
 

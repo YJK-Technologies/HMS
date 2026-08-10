@@ -212,5 +212,17 @@ router.post("/GetGenderReport", dataController.GetGenderReport)
 router.post("/GetServiceReport", dataController.GetServiceReport)
 router.post("/GetServiceName", dataController.GetServiceName)
 router.post("/getDoctorDropdown", dataController.getDoctorDropdown)
+router.post("/getUserPermission", dataController.getUserPermission)
+router.post("/adduserscreenmap", dataController.adduserscreenmap)
+router.post("/getAlluserscreenmap", dataController.getAlluserscreenmap)
+router.post("/saveEditeduserscreenmap", dataController.saveEditeduserscreenmap)
+router.post("/userscreenmapdeleteData", dataController.userscreenmapdeleteData)
+router.post("/getuserscreensearchdata", dataController.getuserscreensearchdata)
+router.post("/updateRoleRights", dataController.updateRoleRights)
+router.post("/getDefaultScreens",dataController.getDefaultScreens)
+router.post("/userSettingsInsert",dataController.userSettingsInsert)
+router.post("/getUserSettings",dataController.getUserSettings)
+router.post("/getDefaultUserCompany",dataController.getDefaultUserCompany)
+
 
 module.exports = router;
