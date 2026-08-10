@@ -5327,6 +5327,318 @@ const getDoctorDropdown = async (req, res) => {
 };
 //Code ended by pavun on 13-09-25
 
+//code added by sakthi on 08-10-26
+const getUserPermission = async (req, res) => {
+  const { role_id } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "UP")
+      .input("role_id", sql.NVarChar, role_id)
+      .query(`EXEC sp_rolescreen_mapping @mode,'',@role_id,'','','','','',null,null,null,null,null,null,null,null
+  `);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const adduserscreenmap = async (req, res) => {
+  const { company_code, role_id, screen_type, permission_type, created_by, modified_by, tempstr1, tempstr2,
+     tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4, } = req.body;
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I") // Insert mode
+      .input("company_code", sql.NVarChar, company_code)
+      .input("role_id", sql.VarChar, role_id)
+      .input("screen_type", sql.NVarChar, screen_type)
+      .input("permission_type", sql.VarChar, permission_type)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("tempstr1", sql.NVarChar, tempstr1)
+      .input("tempstr2", sql.NVarChar, tempstr2)
+      .input("tempstr3", sql.NVarChar, tempstr3)
+      .input("tempstr4", sql.NVarChar, tempstr4)
+      .input("datetime1", sql.NVarChar, datetime1)
+      .input("datetime2", sql.NVarChar, datetime2)
+      .input("datetime3", sql.NVarChar, datetime3)
+      .input("datetime4", sql.NVarChar, datetime4)
+      .query(
+        `EXEC sp_rolescreen_mapping @mode, @company_code,@role_id, @screen_type,@permission_type,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    res.json({ success: true, message: "Data inserted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getAlluserscreenmap = async (req, res) => {
+  try {
+    await connection.connectToDatabase();
+    const result = await sql.query(`EXEC sp_rolescreen_mapping 'A','','','','','','','',
+                                      null,null,null,null,null,null,null,null `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const saveEditeduserscreenmap = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!editedData || !editedData.length) {
+    res.status(400).json("Invalid or empty editedData array.");
+    return;
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const updatedRow of editedData) {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "U")
+        .input("company_code", updatedRow.company_code)
+        .input("role_id", updatedRow.role_id)
+        .input("screen_type", updatedRow.screen_type)
+        .input("permission_type", updatedRow.permission_type)
+        .input("keyfield", updatedRow.keyfield)
+        .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+        .input("tempstr1", updatedRow.tempstr1)
+        .input("tempstr2", updatedRow.tempstr2)
+        .input("tempstr3", updatedRow.tempstr3)
+        .input("tempstr4", updatedRow.tempstr4)
+        .input("datetime1", updatedRow.datetime1)
+        .input("datetime2", updatedRow.datetime2)
+        .input("datetime3", updatedRow.datetime3)
+        .input("datetime4", updatedRow.datetime4)
+        .query(`EXEC sp_rolescreen_mapping @mode,@company_code, @role_id, @screen_type, @permission_type, @keyfield,'', @modified_by,  
+        @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
+    }
+
+    res.status(200).json("Edited data saved successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const userscreenmapdeleteData = async (req, res) => {
+  const keyfieldsToDelete = req.body.keyfield;
+
+  // if (!keyfieldsToDelete || !keyfieldsToDelete.length) {
+  //   res.status(400).json("Invalid or empty company_nos array.");
+  //   return;
+  // }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const keyfield of keyfieldsToDelete) {
+      try {
+        await pool.request().input("keyfield", keyfield)
+          .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+          .query(`EXEC sp_rolescreen_mapping 'D','','','','',@keyfield,'',@modified_by,null,null,null,null,null,null,null,null`);
+      } catch (error) {
+        if (error.number === 50000) {
+          // Foreign key constraint violation
+          res.status(400).json("The user rights cannot be deleted due to a link with another record");
+          return;
+        } else {
+          throw error; // Rethrow other SQL errors
+        }
+      }
+    }
+
+    res.status(200).json("User screen mapping deleted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getuserscreensearchdata = async (req, res) => {
+  const { company_code, role_id, screen_type, permission_type } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("company_code", sql.VarChar, company_code)
+      .input("role_id", sql.VarChar, role_id)
+      .input("screen_type", sql.NVarChar, screen_type)
+      .input("permission_type", sql.NVarChar, permission_type)
+      .query(`EXEC sp_rolescreen_mapping @mode,@company_code,@role_id,@screen_type,@permission_type,'','','',
+      null,null,null,null,null,null,null,null`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const updateRoleRights = async (req, res) => {
+  const { company_code, role_id, screen_type, permission_type, keyfield, modified_by } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("company_code", sql.VarChar, company_code)
+      .input("role_id", sql.VarChar, role_id)
+      .input("screen_type", sql.NVarChar, screen_type)
+      .input("permission_type", sql.VarChar, permission_type)
+      .input("keyfield", sql.VarChar, keyfield)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_rolescreen_mapping @mode,@company_code, @role_id, @screen_type, @permission_type, @keyfield,'', @modified_by,  
+               NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`)
+    res.status(200).json("Edited data saved successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getDefaultScreens = async (req, res) => {
+  const { role_id, company_code, Location_Code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool.request()
+      .input("mode", sql.VarChar, "GDS")
+      .input("role_id", sql.VarChar, role_id)
+      .input("company_code", sql.VarChar, company_code)
+      .input("Location_Code", sql.VarChar, Location_Code)
+      .query(`EXEC sp_UserSettings @mode, '', '', @company_code, @Location_Code, '', '', '', @role_id, '', '', '', '' `);
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error("Error fetching default screens:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const userSettingsInsert = async (req, res) => {
+  const { User_Code, Status, company_code, Location_Code, DefaultCompanyId, DefaultScreenId, role_id, created_by, } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("User_Code", sql.NVarChar, User_Code)
+      .input("Status", sql.NVarChar, Status)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .input("keyfield", sql.NVarChar, company_code)
+      .input("DefaultCompanyId", sql.NVarChar, DefaultCompanyId)
+      .input("DefaultScreenId", sql.NVarChar, DefaultScreenId)
+      .input("role_id", sql.NVarChar, role_id)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(` EXEC sp_UserSettings @mode, @User_Code, @Status, @company_code, @Location_Code, @keyfield, 
+        @DefaultCompanyId, @DefaultScreenId, @role_id, @created_by, '', '', '' `);
+
+    res.status(200).json({
+      success: true,
+      message: "User Settings saved successfully",
+    });
+  } catch (err) {
+    console.error("Error during User Settings insert:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const getUserSettings = async (req, res) => {
+  const { User_Code, company_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "S")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("User_Code", sql.NVarChar, User_Code)
+      .query(` EXEC sp_UserSettings @mode, @User_Code, '', @company_code, '', '', '', '', '', '', '', '', '' `);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Data not found",
+      });
+    }
+  } catch (err) {
+    console.error("Error getting User Settings:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const getDefaultUserCompany = async (req, res) => {
+  const { user_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "UCLD")
+      .input("user_code", sql.NVarChar, user_code)
+      .query(` EXEC sp_user_company_mapping @mode, '', @user_code, '', '', '', 0, '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Default company not found" });
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//code ended by sakthi on 08-10-26
+
+
 module.exports = {
   login,
   forgetPassword,
@@ -5530,4 +5842,16 @@ module.exports = {
   GetServiceReport,
   GetServiceName,
   getDoctorDropdown,
+  getUserPermission,
+  adduserscreenmap,
+  getAlluserscreenmap,
+  saveEditeduserscreenmap,
+  userscreenmapdeleteData,
+  getuserscreensearchdata,
+  updateRoleRights,
+  getDefaultScreens,
+  userSettingsInsert,
+  getUserSettings,
+  getDefaultUserCompany
+
 };

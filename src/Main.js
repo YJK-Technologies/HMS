@@ -32,6 +32,7 @@ import SaleTrans from './SalesAnalysis.js';
 import SalesPrint from './SalesTemplate.js';
 import Chart from './ItemDashboard/Charts/Charts.js';
 import Settings from './Settings.js';
+import UserSettings from './UserSettings.js';
 import AccountInformation from "./AccountInformation.js";
 import UserScreenMapGrid from "./userscreenmapgrid.js";
 import UserScreenInput from "./userscreeninput.js"; 
@@ -115,6 +116,7 @@ function Main() {
     { path: "/SalesPrint", component: <SalesPrint /> },
     { path: "/SalesChart", component: <Chart /> },
     { path: "/Settings", component: <Settings /> },
+    { path: "/UserSettings", component: <UserSettings /> },
     { path: "/AddCompany", component: <Input /> },
     { path: "/SalesAnalysis", component: <SaleTrans /> },
     { path: "/Company", component: <Grid /> },
