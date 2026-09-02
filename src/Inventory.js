@@ -1642,6 +1642,7 @@ useEffect(() => {
                       className="exp-input-field"
                       placeholder=""
                       maxLength={50}
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                 </div>
@@ -1711,6 +1712,7 @@ useEffect(() => {
                     value={SelectedPayementmode}
                     onChange={handleChangePayment}
                     options={filteredOptionPayment}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                 </div>
               </div>
@@ -1732,6 +1734,7 @@ useEffect(() => {
                         getDoctorName();
                       }
                     }}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                 </div>
               </div>
@@ -1880,6 +1883,7 @@ useEffect(() => {
                 isClearable
                 options={filteredOptionService}
                 placeholder="Select Service"
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
           </div>

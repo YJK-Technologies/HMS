@@ -324,6 +324,7 @@ function UserComMap_input({ }) {
                           onKeyDown={(e) =>
                             handleKeyDown(e, companycode, usercode)
                           }
+                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                         </div>
                       </div>
@@ -349,6 +350,7 @@ function UserComMap_input({ }) {
                           onKeyDown={(e) =>
                             handleKeyDown(e, locno, companycode)
                           }
+                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                        </div>
                       </div>
@@ -372,6 +374,7 @@ function UserComMap_input({ }) {
                           placeholder=""
                           ref={locno}
                           onKeyDown={(e) => handleKeyDown(e, Status, locno)}
+                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                        </div>
                       </div>
@@ -395,6 +398,7 @@ function UserComMap_input({ }) {
                           placeholder=""
                           ref={Status}
                           onKeyDown={(e) => handleKeyDown(e, Orderno, Status)}
+                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                        </div>
                       </div>

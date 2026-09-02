@@ -315,6 +315,7 @@ function UserScreenInput({ }) {
                         maxLength={18}
                         ref={roleId}
                         onKeyDown={(e) => handleKeyDown(e, screentype, roleId)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !role_id && <div className="text-danger">User Code should not be blank</div>} */}
                     </div>
@@ -340,6 +341,7 @@ function UserScreenInput({ }) {
                         ref={screentype}
                         onKeyDown={(e) => handleKeyDown(e, permissiontype, screentype)}
                         required title="Please select a screen type here"
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !screen_type && <div className="text-danger">Screen Type should not be blank</div>} */}
                     </div>
@@ -374,6 +376,7 @@ function UserScreenInput({ }) {
                           }
                         }}
                         required title="Please select a permission type here"
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !permission_type && <div className="text-danger">Permission Type should not be blank</div>} */}
                     </div></div>

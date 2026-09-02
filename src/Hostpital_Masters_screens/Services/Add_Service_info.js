@@ -307,6 +307,7 @@ const AddServiceScreen = () => {
               options={filteredOptionTax}
               ref={(el) => (inputRefs.current[4] = el)}
               onKeyDown={(e) => handleKeyDown(e, 4)}
+              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
           </div>
           <div className="col-md-3">
@@ -318,6 +319,7 @@ const AddServiceScreen = () => {
               options={filteredOptionStatus}
               ref={(el) => (inputRefs.current[5] = el)}
               onKeyDown={(e) => handleKeyDown(e, 5)}
+              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
           </div>
           <div class="col-md-3 mt-4 form-group d-flex justify-content-start mb-4">

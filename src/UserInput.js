@@ -640,6 +640,7 @@ function UserInput({ }) {
                         maxLength={50}
                         ref={Status}
                         onKeyDown={(e) => handleKeyDown(e, loginlogout, Status)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !user_status && <div className="text-danger">Status should not be blank</div>} */}
                     </div>
@@ -659,6 +660,7 @@ function UserInput({ }) {
                         maxLength={3}
                         ref={loginlogout}
                         onKeyDown={(e) => handleKeyDown(e, usertype, loginlogout)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                     </div>
                     </div>
@@ -684,6 +686,7 @@ function UserInput({ }) {
                         maxLength={50}
                         ref={usertype}
                         onKeyDown={(e) => handleKeyDown(e, email, usertype)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !user_status && <div className="text-danger">User Type should not be blank</div>} */}
                     </div>
@@ -753,6 +756,7 @@ function UserInput({ }) {
                         maxLength={50}
                         ref={Gender}
                         onKeyDown={(e) => handleKeyDown(e, ImagE, Gender)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                     </div>
                     </div>
