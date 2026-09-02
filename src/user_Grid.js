@@ -924,6 +924,7 @@ function UserGrid() {
                   options={filteredOptionStatus}
                   className="exp-input-field"
                   placeholder=""
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
               </div>
@@ -942,6 +943,7 @@ function UserGrid() {
                   options={filteredOptionUser}
                   className="exp-input-field"
                   placeholder=""
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
               </div>
@@ -978,6 +980,7 @@ function UserGrid() {
                   options={filteredOptionGender}
                   className="exp-input-field"
                   placeholder=""
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
               </div>

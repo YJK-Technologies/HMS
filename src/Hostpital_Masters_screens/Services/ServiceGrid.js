@@ -721,6 +721,7 @@ function ServiceGrid() {
                   onChange={handleChangeStatus}
                   options={filteredOptionStatus}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
             </div>
