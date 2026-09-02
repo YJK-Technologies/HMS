@@ -1295,6 +1295,7 @@ const ANC_Mothers_ScanScreen = () => {
                             onChange={handleChangeWeeks}
                             options={filteredOptionWeeks}
                             placeholder="Enter Scan Impression Weeks"
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                     </div>
                     <div className="col-md-3">
@@ -1304,6 +1305,7 @@ const ANC_Mothers_ScanScreen = () => {
                             onChange={handleChangeDays}
                             options={filteredOptionDays}
                             placeholder="Enter Scan Impression Days"
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                     </div>
                     <div className="col-md-3">
@@ -1334,6 +1336,7 @@ const ANC_Mothers_ScanScreen = () => {
                             className=""
                             onChange={handleChangeMaritalStatus}
                             options={filteredOptionMaritalStatus}
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                     </div>
                     <div className="col-md-3">
@@ -1353,6 +1356,7 @@ const ANC_Mothers_ScanScreen = () => {
                             onChange={handleChangeService}
                             options={filteredOptionService}
                             placeholder="Enter Type Of Scans"
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                     </div>
                     <div className="col-md-3">
@@ -1382,6 +1386,7 @@ const ANC_Mothers_ScanScreen = () => {
                                 options={filteredOptionGender}
                                 placeholder=""
                                 maxLength={50}
+                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                             />
                         </div>
                     </div>

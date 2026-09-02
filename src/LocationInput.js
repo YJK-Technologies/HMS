@@ -598,15 +598,8 @@ function LocInfoInput({ }) {
                         placeholder=""
                         maxLength={100}
                         ref={City}
-                        onKeyDown={(e) =>
-                          handleKeyDown(
-                            e,
-                            State,
-                            City,
-                            hasValueChanged,
-                            setHasValueChanged
-                          )
-                        }
+                        onKeyDown={(e) => handleKeyDown( e, State, City, hasValueChanged, setHasValueChanged ) }
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !city && (
                         <div className="text-danger">
@@ -635,15 +628,8 @@ function LocInfoInput({ }) {
                         placeholder=""
                         maxLength={100}
                         ref={State}
-                        onKeyDown={(e) =>
-                          handleKeyDown(
-                            e,
-                            Pincode,
-                            State,
-                            hasValueChanged,
-                            setHasValueChanged
-                          )
-                        }
+                        onKeyDown={(e) => handleKeyDown( e, Pincode, State, hasValueChanged, setHasValueChanged ) }
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !state && (
                         <div className="text-danger">
@@ -706,6 +692,7 @@ function LocInfoInput({ }) {
                         maxLength={100}
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, email, Status)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       </div>
                     </div>
@@ -748,7 +735,7 @@ function LocInfoInput({ }) {
                           </label>
                         </div>
                       </div>
-                                      <div title="Select the Status ">
+                      <div title="Select the Status ">
                       <Select
                         id="status"
                         value={selectedStatus}
@@ -758,6 +745,7 @@ function LocInfoInput({ }) {
                         placeholder=""
                         ref={Status}
                         onKeyDown={(e) => handleKeyDown(e, Contactno, Status)}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       {/* {error && !status && (
                         <div className="text-danger">

@@ -367,6 +367,7 @@ const AddDoctorScreen = () => {
                 className="exp-input-field"
                 ref={(el) => (inputRefs.current[3] = el)}
                 onKeyDown={(e) => handleKeyDown(e, 3)}
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
             <div className="col-md-3">
@@ -418,6 +419,7 @@ const AddDoctorScreen = () => {
                 className="exp-input-field"
                 ref={(el) => (inputRefs.current[7] = el)}
                 onKeyDown={(e) => handleKeyDown(e, 7)}
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
             <div className="col-md-3">
@@ -430,6 +432,7 @@ const AddDoctorScreen = () => {
                 className="exp-input-field"
                 ref={(el) => (inputRefs.current[8] = el)}
                 onKeyDown={(e) => handleKeyDown(e, 8)}
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
             <div className="col-md-3">
@@ -442,6 +445,7 @@ const AddDoctorScreen = () => {
                 className="exp-input-field"
                 ref={(el) => (inputRefs.current[9] = el)}
                 onKeyDown={(e) => handleKeyDown(e, 9)}
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
             <div class="col-md-3 mt-4 form-group d-flex justify-content-start mb-4">

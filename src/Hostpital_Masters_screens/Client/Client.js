@@ -855,6 +855,7 @@ function AttriDetGrid() {
                 onChange={handleChangeAgreement}
                 options={filteredOptionAgreement}
                 className="exp-input-field"
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
             <div className="col-md-2 form-group mt-4">

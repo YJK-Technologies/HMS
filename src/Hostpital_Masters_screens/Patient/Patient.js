@@ -789,6 +789,7 @@ function AttriDetGrid() {
                   onChange={handleChangeGender}
                   options={filteredOptionGender}
                   className="exp-input-field"
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
             </div>
